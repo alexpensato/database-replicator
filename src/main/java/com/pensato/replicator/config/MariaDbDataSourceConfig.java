@@ -19,8 +19,8 @@ import javax.sql.DataSource;
 @Configuration
 @EnableJpaRepositories(
         basePackages = "com.pensato.replicator.repositories.mariadb",
-        entityManagerFactoryRef = "mariaDbEntityManagerFactory",
-        transactionManagerRef = "mariaDbTransactionManager"
+        entityManagerFactoryRef = "replicaEntityManagerFactory",
+        transactionManagerRef = "replicaTransactionManager"
 )
 @AllArgsConstructor
 public class MariaDbDataSourceConfig extends AbstractDataSourceConfig
@@ -45,14 +45,14 @@ public class MariaDbDataSourceConfig extends AbstractDataSourceConfig
     }
 
     @Bean
-    public PlatformTransactionManager mariaDbTransactionManager()
+    public PlatformTransactionManager replicaTransactionManager()
     {
-        EntityManagerFactory factory = mariaDbEntityManagerFactory().getObject();
+        EntityManagerFactory factory = replicaEntityManagerFactory().getObject();
         return new JpaTransactionManager(factory);
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean mariaDbEntityManagerFactory()
+    public LocalContainerEntityManagerFactoryBean replicaEntityManagerFactory()
     {
         return getEntityManagerFactory(mariaDbDataSource(), env);
     }

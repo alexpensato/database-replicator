@@ -20,9 +20,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "com.pensato.replicator.repositories.pgsql",
-        entityManagerFactoryRef = "pgSqlEntityManagerFactory",
-        transactionManagerRef = "pgSqlTransactionManager"
+        basePackages = "com.pensato.replicator.repositories.postgres",
+        entityManagerFactoryRef = "primeEntityManagerFactory",
+        transactionManagerRef = "primeTransactionManager"
 )
 @AllArgsConstructor
 public class PgSqlDataSourceConfig extends AbstractDataSourceConfig
@@ -30,7 +30,7 @@ public class PgSqlDataSourceConfig extends AbstractDataSourceConfig
     private Environment env;
 
     @Bean
-    @ConfigurationProperties(prefix="datasource.pgsql")
+    @ConfigurationProperties(prefix="datasource.postgres")
     public DataSourceProperties pgSqlDataSourceProperties() {
         return new DataSourceProperties();
     }
@@ -47,14 +47,14 @@ public class PgSqlDataSourceConfig extends AbstractDataSourceConfig
     }
 
     @Bean
-    public PlatformTransactionManager pgSqlTransactionManager()
+    public PlatformTransactionManager primeTransactionManager()
     {
-        EntityManagerFactory factory = pgSqlEntityManagerFactory().getObject();
+        EntityManagerFactory factory = primeEntityManagerFactory().getObject();
         return new JpaTransactionManager(factory);
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean pgSqlEntityManagerFactory()
+    public LocalContainerEntityManagerFactoryBean primeEntityManagerFactory()
     {
         return getEntityManagerFactory(pgSqlDataSource(), env);
     }
@@ -67,7 +67,7 @@ public class PgSqlDataSourceConfig extends AbstractDataSourceConfig
         ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
         databasePopulator.addScript(new ClassPathResource("create.sql"));
         dataSourceInitializer.setDatabasePopulator(databasePopulator);
-        dataSourceInitializer.setEnabled(env.getProperty("datasource.pgsql.initialize", Boolean.class, false));
+        dataSourceInitializer.setEnabled(env.getProperty("datasource.postgres.initialize", Boolean.class, false));
         return dataSourceInitializer;
     }
 }

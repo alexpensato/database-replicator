@@ -1,9 +1,7 @@
 package com.pensato.replicator.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.pensato.replicator.support.BaseEntity;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,15 +10,22 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name="student")
+@Table(name = "student")
 @Builder(toBuilder = true)
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class Student {
+public class Student implements BaseEntity<Student, Long> {
     @Id
     private Long id;
     private String name;
     private String address;
     @ManyToOne
     private College college;
+
+    @Override
+    public Student createCopy() {
+        return this.toBuilder().build();
+    }
+
 }

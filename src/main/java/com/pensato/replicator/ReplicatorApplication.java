@@ -1,8 +1,7 @@
 package com.pensato.replicator;
 
-import com.pensato.replicator.models.College;
-import com.pensato.replicator.models.Student;
-import com.pensato.replicator.service.UniversityService;
+import com.pensato.replicator.services.CollegeService;
+import com.pensato.replicator.services.StudentService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,8 +10,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.util.List;
 
 @SpringBootApplication(
 		exclude = { DataSourceAutoConfiguration.class,
@@ -26,23 +23,10 @@ public class ReplicatorApplication {
 	}
 
 	@Bean
-	public CommandLineRunner loadData(UniversityService universityService) {
+	public CommandLineRunner loadData(CollegeService collegeService, StudentService studentService) {
 		return (args) -> {
-			List<College> originColleges = universityService.getCollegesFromOriginDb();
-			List<College> destinationColleges = universityService.getCollegesInDestinationDb();
-			for(College e: originColleges) {
-				if(!destinationColleges.contains(e)) {
-					universityService.createOrUpdateCollege(e.toBuilder().build());
-				}
-			}
-
-			List<Student> originStudents = universityService.getStudentsFromOriginDb();
-			List<Student> destinationStudents = universityService.getStudentsInDestinationDb();
-			for(Student e: originStudents) {
-				if(!destinationStudents.contains(e)) {
-					universityService.createOrUpdateStudent(e.toBuilder().build());
-				}
-			}
+			collegeService.initializeReplication();
+			studentService.initializeReplication();
 		};
 	}
 
